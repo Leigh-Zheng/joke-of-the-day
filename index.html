@@ -30,15 +30,9 @@
       padding: 2rem 1.25rem;
     }
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-    }
+    .container { width: 100%; max-width: 500px; }
 
-    .header {
-      margin-bottom: 2.5rem;
-      text-align: center;
-    }
+    .header { margin-bottom: 2.5rem; text-align: center; }
 
     .eyebrow {
       font-size: 11px;
@@ -57,10 +51,7 @@
       color: var(--ink);
     }
 
-    h1 em {
-      font-style: italic;
-      color: var(--accent);
-    }
+    h1 em { font-style: italic; color: var(--accent); }
 
     .tagline {
       margin-top: 0.75rem;
@@ -69,11 +60,17 @@
       line-height: 1.6;
     }
 
-    .input-group {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 1.5rem;
+    .quota-badge {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(26,24,20,0.06);
+      padding: 3px 10px;
+      border-radius: 20px;
     }
+
+    .input-group { display: flex; gap: 8px; margin-bottom: 1.5rem; }
 
     input[type="text"] {
       flex: 1;
@@ -89,13 +86,8 @@
       transition: border-color 0.2s;
     }
 
-    input[type="text"]:focus {
-      border-color: var(--accent);
-    }
-
-    input[type="text"]::placeholder {
-      color: var(--muted);
-    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]::placeholder { color: var(--muted); }
 
     button {
       font-family: 'DM Sans', sans-serif;
@@ -128,14 +120,11 @@
       transition: border-color 0.3s;
     }
 
-    .joke-card.has-joke {
-      border-color: var(--accent);
-    }
+    .joke-card.has-joke { border-color: var(--accent); }
 
     .joke-word-tag {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.08em;
@@ -145,14 +134,6 @@
       padding: 4px 10px;
       border-radius: 6px;
       margin-bottom: 1rem;
-    }
-
-    .joke-label {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
     }
 
     .joke-text {
@@ -167,7 +148,6 @@
       color: var(--muted);
       text-align: center;
       font-style: italic;
-      line-height: 1.6;
     }
 
     .loading-text {
@@ -190,41 +170,6 @@
       display: none;
     }
 
-    .api-key-section {
-      margin-bottom: 1.25rem;
-    }
-
-    .api-key-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .api-key-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .api-key-row input {
-      font-family: 'DM Sans', monospace;
-      font-size: 13px;
-    }
-
-    .save-btn {
-      background: var(--ink);
-      font-size: 13px;
-      padding: 0 1rem;
-    }
-
-    .key-saved {
-      font-size: 12px;
-      color: #2E7D32;
-      margin-top: 5px;
-      display: none;
-    }
-
     footer {
       margin-top: 2rem;
       font-size: 12px;
@@ -239,15 +184,7 @@
       <p class="eyebrow">Daily laughs</p>
       <h1>Joke of<br>the <em>Day</em></h1>
       <p class="tagline">Type any word. Get a joke built around it.</p>
-    </div>
-
-    <div class="api-key-section">
-      <label class="api-key-label">Your Anthropic API key (saved in browser only)</label>
-      <div class="api-key-row">
-        <input type="password" id="api-key-input" placeholder="sk-ant-..." />
-        <button class="save-btn" onclick="saveKey()">Save</button>
-      </div>
-      <p class="key-saved" id="key-saved">Key saved!</p>
+      <span class="quota-badge">5 jokes per person per day</span>
     </div>
 
     <div class="input-group">
@@ -260,7 +197,7 @@
     </div>
     <p class="error-msg" id="err-msg"></p>
 
-    <footer>Powered by Claude &nbsp;·&nbsp; jokes are generated fresh each time</footer>
+    <footer>Powered by Claude · jokes are generated fresh each time</footer>
   </div>
 
   <script>
@@ -268,21 +205,8 @@
     const card = document.getElementById('joke-card');
     const btn = document.getElementById('gen-btn');
     const errMsg = document.getElementById('err-msg');
-    const apiKeyInput = document.getElementById('api-key-input');
-    const keySaved = document.getElementById('key-saved');
-
-    const saved = localStorage.getItem('anthropic_key');
-    if (saved) apiKeyInput.value = saved;
 
     wordInput.addEventListener('keydown', e => { if (e.key === 'Enter') generateJoke(); });
-
-    function saveKey() {
-      const key = apiKeyInput.value.trim();
-      if (!key) return;
-      localStorage.setItem('anthropic_key', key);
-      keySaved.style.display = 'block';
-      setTimeout(() => keySaved.style.display = 'none', 2000);
-    }
 
     function esc(s) {
       return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -295,9 +219,6 @@
 
     async function generateJoke() {
       const word = wordInput.value.trim();
-      const apiKey = localStorage.getItem('anthropic_key') || apiKeyInput.value.trim();
-
-      if (!apiKey) { showError('Please enter and save your Anthropic API key first.'); return; }
       if (!word) { showError('Please enter a word.'); return; }
 
       errMsg.style.display = 'none';
@@ -307,32 +228,19 @@
       card.innerHTML = '<p class="loading-text">Crafting your joke…</p>';
 
       try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const res = await fetch('/api/joke', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 300,
-            system: 'You are a witty comedian. When given a word, write a single short joke (setup + punchline) that cleverly incorporates that word. Keep it clean, clever, and under 3 sentences. Return ONLY the joke text, nothing else.',
-            messages: [{ role: 'user', content: `Word: "${word}"` }]
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ word })
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || 'API error');
-
-        const joke = data.content?.[0]?.text?.trim();
-        if (!joke) throw new Error('No joke returned');
+        if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
         card.className = 'joke-card has-joke';
         card.innerHTML = `
           <div class="joke-word-tag">${esc(word)}</div>
-          <p class="joke-text">${esc(joke)}</p>
+          <p class="joke-text">${esc(data.joke)}</p>
         `;
       } catch (e) {
         card.innerHTML = '<p class="placeholder-text">Your joke will appear here…</p>';
